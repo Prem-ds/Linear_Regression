@@ -1,0 +1,53 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import numpy as np
+
+# -------------------------
+# 1. Prepare the dataset
+# -------------------------
+data = {"Day": [1, 2, 3, 4, 5], "Sales": [100, 120, 130, 150, 170]}
+df = pd.DataFrame(data)
+
+# -------------------------
+# 2. Train Linear Regression Model
+# -------------------------
+X = df[["Day"]]          # Feature (independent variable)
+y = df["Sales"]          # Target (dependent variable)
+model = LinearRegression()
+model.fit(X, y)
+
+# -------------------------
+# 3. Predict for original and future days
+# -------------------------
+days_extended = np.arange(1, 11).reshape(-1, 1)   # Days 1 to 10
+predictions = model.predict(days_extended)        # Predicted sales
+
+df["Predicted_Sales"] = model.predict(X)          # Predictions for Days 1-5
+day6_pred = model.predict([[6]])[0]               # Example for Day 6
+
+# -------------------------
+# 4. Plot Actual vs Predicted
+# -------------------------
+plt.figure(figsize=(10,6))
+
+# Actual sales (blue points)
+plt.scatter(df["Day"], df["Sales"], color="blue", label="Actual Sales")
+
+# Predicted line (red line)
+plt.plot(days_extended, predictions, color="red", label="Predicted Sales (Line)")
+
+# Highlight Day 6 forecast (green X)
+plt.scatter(6, day6_pred, color="green", marker="x", s=100, label=f"Day 6 Prediction: {day6_pred:.1f}")
+
+plt.title("Actual vs Predicted Sales (Linear Regression)")
+plt.xlabel("Day")
+plt.ylabel("Sales")
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# -------------------------
+# 5. Print Regression Equation
+# -------------------------
+print(f"Sales = {model.intercept_:.1f} + {model.coef_[0]:.1f} * Day")
